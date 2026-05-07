@@ -1,4 +1,5 @@
 import requests
+from loguru import logger
 
 from models.job_dto import JobDTO
 
@@ -8,6 +9,9 @@ class Fetcher:
         self.url = url
 
     def fetch_page(self, page_number: int = 0):
-        return requests.get(self.url, params={'page': page_number}).json()
+        logger.info(f"GET: {self.url}")
+        response = requests.get(self.url, params={'page': page_number})
+        logger.debug(f"{response.status_code}: {response.text}")
 
-
+        job_list = response.json()['data']
+        return [JobDTO(**job) for job in job_list]
