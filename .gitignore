@@ -7,3 +7,9 @@ venv/
 # Python cache files
 __pycache__/
 *.pyc
+
+# Local storage files
+jobs_local_storage.csv
+
+# Local logs
+logs_app.log
