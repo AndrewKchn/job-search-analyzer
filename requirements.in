@@ -1,0 +1,6 @@
+loguru
+pydantic
+requests
+
+pytest
+requests-mock
