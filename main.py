@@ -1,9 +1,11 @@
-from clients.fetcher import Fetcher
+from clients.api_client import ArbeitnowClient
+from config import ARBEITNOW_API_URL, DATABASE_PATH
 from database.file_repository import CsvRepository
+from services.sync_service import SyncService
 
-fetcher = Fetcher("https://www.arbeitnow.com/api/job-board-api")
+client = ArbeitnowClient(ARBEITNOW_API_URL)
+repo = CsvRepository(DATABASE_PATH)
 
-jobs = fetcher.fetch_page()
+service = SyncService(client=client, repository=repo)
 
-repository = CsvRepository("local_storage/jobs.csv")
-repository.save_jobs(jobs)
+service.sync_jobs_form_all_pages()
