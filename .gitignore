@@ -2,8 +2,11 @@
 .idea/
 
 # Virtual environment
-venv/
+.venv/
 
 # Python cache files
 __pycache__/
 *.pyc
+
+# Pytest and Coverage
+.coverage

@@ -1,0 +1,46 @@
+name: Python CI Pipeline
+
+# This workflow triggers on every push to 'main' and every pull request targeting 'main'
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-and-coverage:
+    # We use the latest Ubuntu runner provided by GitHub
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository code onto the runner
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Set up the specific Python environment
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          # Optional: Caching dependencies speeds up subsequent runs
+          cache: 'pip'
+
+      # 3. Install project dependencies
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt          
+          pip install pytest pytest-cov pytest-mock
+
+      # 4. Execute tests and check coverage
+      # Pytest will automatically read settings from pytest.ini
+      - name: Run Tests and Check Coverage
+        run: |
+          pytest
+
+      # 5. Summary of the results
+      # This step helps to see a quick summary in the GitHub Actions console
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "Tests and Coverage check completed."
