@@ -1,2 +1,8 @@
+loguru
+pydantic
+requests
+
 pytest
 pytest-cov
+requests-mock
+pytest-mock
