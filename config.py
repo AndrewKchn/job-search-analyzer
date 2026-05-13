@@ -7,7 +7,7 @@ ARBEITNOW_API_URL = "https://www.arbeitnow.com/api/job-board-api"
 DATABASE_PATH = "jobs_local_storage.csv"
 
 # 3.
-# MAX_PAGES = 2
+UPDATE_PAGES_LIMIT = 100
 REQUEST_TIMEOUT = 10
 MIN_SLEEP_BETWEEN_REQUESTS = 2
 MAX_SLEEP_BETWEEN_REQUESTS = 5
