@@ -1,10 +1,10 @@
 import streamlit as st
 
-from clients.api_client import ArbeitnowClient
 from config import ARBEITNOW_API_URL, DATABASE_PATH, UPDATE_PAGES_LIMIT
-from repository.file_repository import CsvRepository
-from services.job_service import JobService
-from services.sync_service import SyncService
+from src.clients.api_client import ArbeitnowClient
+from src.repository.file_repository import CsvRepository
+from src.services.job_service import JobService
+from src.services.sync_service import SyncService
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(

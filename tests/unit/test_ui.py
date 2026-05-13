@@ -7,7 +7,7 @@ from streamlit.testing.v1 import AppTest
 
 @pytest.fixture
 def app_path():
-    return str(Path(__file__).parent.parent.parent / "ui" / "app.py")
+    return str(Path(__file__).parent.parent.parent / "src" / "ui" / "app.py")
 
 def test_app_initial_load(app_path):
     at = AppTest.from_file(app_path).run()
@@ -16,7 +16,7 @@ def test_app_initial_load(app_path):
     assert at.title[0].value == "📊 Job Market Analytics"
 
 
-@patch('services.job_service.JobService.get_dataframe')
+@patch('src.services.job_service.JobService.get_dataframe')
 def test_app_with_empty_data(mock_get_df, app_path):
     import pandas as pd
     mock_get_df.return_value = pd.DataFrame()
@@ -26,7 +26,7 @@ def test_app_with_empty_data(mock_get_df, app_path):
     assert "The database is currently empty" in at.warning[0].value
 
 
-@patch('services.sync_service.SyncService.sync_jobs_from_all_pages')
+@patch('src.services.sync_service.SyncService.sync_jobs_from_all_pages')
 def test_sidebar_fetch_button(mock_sync_service, app_path):
     mock_sync_service.return_value = 5
 

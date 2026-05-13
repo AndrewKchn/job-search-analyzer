@@ -1,7 +1,7 @@
 import pandas as pd
 from loguru import logger
 
-from repository.file_repository import CsvRepository
+from src.repository.file_repository import CsvRepository
 
 
 class JobService:

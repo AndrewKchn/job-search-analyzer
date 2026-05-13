@@ -1,6 +1,6 @@
 import pytest
 
-from clients.api_client import ArbeitnowClient
+from src.clients.api_client import ArbeitnowClient
 from config import ARBEITNOW_API_URL
 
 
