@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from config import UPDATE_PAGES_LIMIT
-from models.job_dto import JobDTO
-from services.sync_service import SyncService
+from src.models.job_dto import JobDTO
+from src.services.sync_service import SyncService
 
 
 @pytest.fixture

@@ -3,10 +3,10 @@ import time
 
 from loguru import logger
 
-from clients.api_client import ArbeitnowClient
+from src.clients.api_client import ArbeitnowClient
 from config import MIN_SLEEP_BETWEEN_REQUESTS, MAX_SLEEP_BETWEEN_REQUESTS
-from repository.file_repository import CsvRepository
-from models.job_dto import JobDTO
+from src.repository.file_repository import CsvRepository
+from src.models.job_dto import JobDTO
 
 
 class SyncService:

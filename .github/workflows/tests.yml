@@ -36,7 +36,7 @@ jobs:
       # Pytest will automatically read settings from pytest.ini
       - name: Run Tests and Check Coverage
         run: |
-          pytest --cov=ui --cov=clients --cov=models --cov=services --cov=repository --cov-report=term-missing --cov-fail-under=80 
+          pytest --cov=src --cov-report=term-missing --cov-fail-under=80 -v
 
       # 5. Summary of the results
       # This step helps to see a quick summary in the GitHub Actions console

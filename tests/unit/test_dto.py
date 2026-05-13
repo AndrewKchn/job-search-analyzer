@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from models.job_dto import JobDTO
+from src.models.job_dto import JobDTO
 
 
 def test_job_dto_valid():
