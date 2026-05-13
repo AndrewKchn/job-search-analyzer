@@ -1,6 +1,7 @@
 loguru
 pydantic
 requests
+streamlit
 
 pytest
 pytest-cov
