@@ -1,6 +1,6 @@
 from clients.api_client import ArbeitnowClient
 from config import ARBEITNOW_API_URL, DATABASE_PATH
-from database.file_repository import CsvRepository
+from repository.file_repository import CsvRepository
 from services.sync_service import SyncService
 
 client = ArbeitnowClient(ARBEITNOW_API_URL)
