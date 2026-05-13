@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 
+from config import UPDATE_PAGES_LIMIT
 from models.job_dto import JobDTO
 from services.sync_service import SyncService
 
@@ -43,15 +44,15 @@ def test_sync_jobs_from_page_success(mock_client, mock_repository, fake_job_data
 
     # Arrange
     mock_client.get_jobs_from_page.return_value = fake_job_data
-    service = SyncService(client=mock_client, repository=mock_repository)
+    service = SyncService(client=mock_client, repository=mock_repository, pages_limit=UPDATE_PAGES_LIMIT)
 
     # Act
     service._sync_jobs_from_page(page_number=1)
 
     # Assert
     mock_client.get_jobs_from_page.assert_called_once_with(1)
-    mock_repository.save_jobs.assert_called_once()
+    mock_repository.save_unique_jobs.assert_called_once()
 
-    passed_jobs = mock_repository.save_jobs.call_args[0][0]
+    passed_jobs = mock_repository.save_unique_jobs.call_args[0][0]
     assert passed_jobs[0].title == "Python Developer"
     assert isinstance(passed_jobs[0], JobDTO)

@@ -24,7 +24,7 @@ def test_save_jobs(tmp_path):
     ]
     # Act
 
-    repo.save_jobs(jobs)
+    repo.save_unique_jobs(jobs)
 
     # Assert
     assert file_path.exists()
