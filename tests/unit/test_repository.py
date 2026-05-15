@@ -1,12 +1,12 @@
-from src.models.job_dto import JobDTO
-from src.repository.file_repository import CsvRepository
+from job_analyzer.models.job_dto import JobDTO
+from job_analyzer.repository.file_repository import CsvRepository
 
 
 def test_save_jobs(tmp_path):
     # Arrange
     file_path = tmp_path / "jobs.csv"
 
-    repo = CsvRepository(str(file_path))
+    repo = CsvRepository(file_path)
 
     jobs = [
         JobDTO(

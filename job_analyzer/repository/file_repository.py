@@ -1,21 +1,23 @@
 import ast
 import csv
 import os
+from pathlib import Path
 
 from loguru import logger
 
-from src.models.job_dto import JobDTO
+from job_analyzer.models.job_dto import JobDTO
 
 
 class CsvRepository:
 
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: Path):
         self.file_path = file_path
         self.headers = list(JobDTO.model_fields.keys())
         self._ensure_file_exists()
 
     def _ensure_file_exists(self):
         logger.debug(f"Ensure the file '{str(self.file_path)}' exists")
+        self.file_path.parent.mkdir(parents=True, exist_ok=True)
         if not os.path.isfile(self.file_path):
             logger.debug(f"Created file: {str(self.file_path)}")
             with open(self.file_path, mode='w', encoding='utf-8', newline='') as f:

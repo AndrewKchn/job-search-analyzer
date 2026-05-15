@@ -1,7 +1,8 @@
 import pytest
 
-from src.clients.api_client import ArbeitnowClient
-from config import ARBEITNOW_API_URL
+from job_analyzer.clients.api_client import ArbeitnowClient
+from job_analyzer.core.config import settings
+
 
 
 @pytest.fixture
@@ -30,8 +31,8 @@ def arbeitnow_mock_response():
 
 def test_fetch_page_arbeitnow_success(requests_mock, arbeitnow_mock_response):
     # Arrange
-    client = ArbeitnowClient(ARBEITNOW_API_URL)
-    adapter = requests_mock.get(ARBEITNOW_API_URL, json=arbeitnow_mock_response, status_code=200)
+    client = ArbeitnowClient(settings.ARBEITNOW_API_URL)
+    adapter = requests_mock.get(settings.ARBEITNOW_API_URL, json=arbeitnow_mock_response, status_code=200)
 
     # Act
     jobs = client.get_jobs_from_page(page_number=1)
