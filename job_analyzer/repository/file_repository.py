@@ -4,7 +4,7 @@ import os
 
 from loguru import logger
 
-from src.models.job_dto import JobDTO
+from job_analyzer.models.job_dto import JobDTO
 
 
 class CsvRepository:

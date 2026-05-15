@@ -11,7 +11,7 @@ __pycache__/
 # Pytest and Coverage
 .coverage
 # Local storage files
-jobs_local_storage.csv
+data/
 
-# Local logs
-logs_app.log
+# Environment settings
+.env

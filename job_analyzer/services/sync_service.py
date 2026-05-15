@@ -3,10 +3,10 @@ import time
 
 from loguru import logger
 
-from src.clients.api_client import ArbeitnowClient
-from config import MIN_SLEEP_BETWEEN_REQUESTS, MAX_SLEEP_BETWEEN_REQUESTS
-from src.repository.file_repository import CsvRepository
-from src.models.job_dto import JobDTO
+from job_analyzer.clients.api_client import ArbeitnowClient
+from job_analyzer.core.config import settings
+from job_analyzer.repository.file_repository import CsvRepository
+from job_analyzer.models.job_dto import JobDTO
 
 
 class SyncService:
@@ -26,7 +26,7 @@ class SyncService:
         return response['links']['next'], unique_jobs_count
 
     def _waiting(self):
-        delay = random.uniform(MIN_SLEEP_BETWEEN_REQUESTS, MAX_SLEEP_BETWEEN_REQUESTS)
+        delay = random.uniform(settings.MIN_SLEEP_BETWEEN_REQUESTS, settings.MAX_SLEEP_BETWEEN_REQUESTS)
         logger.debug(f"Waiting {delay:.2f} seconds...'")
         time.sleep(delay)
 

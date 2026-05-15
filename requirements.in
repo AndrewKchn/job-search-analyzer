@@ -1,5 +1,6 @@
 loguru
 pydantic
+pydantic-settings
 requests
 streamlit
 
