@@ -1,10 +1,13 @@
-import streamlit as st
+# --- SETUP LOGGING ---
+from job_analyzer.core.config import settings
+settings.setup_logger()
 
-from config import ARBEITNOW_API_URL, DATABASE_PATH, UPDATE_PAGES_LIMIT
-from src.clients.api_client import ArbeitnowClient
-from src.repository.file_repository import CsvRepository
-from src.services.job_service import JobService
-from src.services.sync_service import SyncService
+import streamlit as st
+from job_analyzer.clients.api_client import ArbeitnowClient
+from job_analyzer.repository.file_repository import CsvRepository
+from job_analyzer.services.job_service import JobService
+from job_analyzer.services.sync_service import SyncService
+
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
@@ -21,10 +24,10 @@ def get_services():
     Initializes and caches services to avoid re-creating
     objects on every Streamlit rerun.
     """
-    repo = CsvRepository(DATABASE_PATH)
-    client = ArbeitnowClient(ARBEITNOW_API_URL)
+    repo = CsvRepository(settings.DATABASE_PATH)
+    client = ArbeitnowClient(settings.ARBEITNOW_API_URL)
 
-    sync_serv = SyncService(client, repo, pages_limit=UPDATE_PAGES_LIMIT)
+    sync_serv = SyncService(client, repo, pages_limit=settings.UPDATE_PAGES_LIMIT)
     job_serv = JobService(repo)
 
     return sync_serv, job_serv

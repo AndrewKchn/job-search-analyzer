@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pandas as pd
 import pytest
 
-from src.services.job_service import JobService
+from job_analyzer.services.job_service import JobService
 
 
 @pytest.fixture

@@ -2,9 +2,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from config import UPDATE_PAGES_LIMIT
-from src.models.job_dto import JobDTO
-from src.services.sync_service import SyncService
+from job_analyzer.core.config import settings
+from job_analyzer.models.job_dto import JobDTO
+from job_analyzer.services.sync_service import SyncService
 
 
 @pytest.fixture
@@ -52,7 +52,7 @@ def service(mock_client, mock_repo):
 def test_sync_jobs_from_page_success(mock_client, mock_repo, fake_job_data):
     # Arrange
     mock_client.get_jobs_from_page.return_value = fake_job_data
-    service = SyncService(client=mock_client, repository=mock_repo, pages_limit=UPDATE_PAGES_LIMIT)
+    service = SyncService(client=mock_client, repository=mock_repo, pages_limit=settings.UPDATE_PAGES_LIMIT)
 
     # Act
     service._sync_jobs_from_page(page_number=1)
