@@ -1,11 +1,12 @@
 import pandas as pd
 from loguru import logger
 
-from job_analyzer.repository.file_repository import CsvRepository
+from job_analyzer.infrastructure.repository.csv_file_repository.file_repository import CsvRepository
+from job_analyzer.infrastructure.repository.sql_lite.sqlite_repository import SQLiteRepository
 
 
 class JobService:
-    def __init__(self, repository: CsvRepository):
+    def __init__(self, repository: SQLiteRepository):
         self.repository = repository
 
     def get_dataframe(self):

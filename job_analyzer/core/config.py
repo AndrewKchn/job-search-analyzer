@@ -1,11 +1,9 @@
-import logging
 import sys
 from pathlib import Path
 
 from loguru import logger
+from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-from job_analyzer.core.log_handler import InterceptHandler
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 
@@ -14,7 +12,8 @@ class Settings(BaseSettings):
     ARBEITNOW_API_URL: str = "https://www.arbeitnow.com/api/job-board-api"
 
     DATA_DIR: Path = Path("data")
-    DATA_CSV_FILE: str = "jobs_local_storage.csv"
+    CSV_FILE: str = "jobs_local_storage.csv"
+    SQL_LITE_DB: str = "jobs_local_storage.db"
 
     UPDATE_PAGES_LIMIT: int = 100
     MIN_SLEEP_BETWEEN_REQUESTS: int = 1
@@ -22,14 +21,20 @@ class Settings(BaseSettings):
 
     LOG_LEVEL: str = "INFO"
 
+    @computed_field
+    @property
+    def csv_file_path(self) -> Path:
+        return self.DATA_DIR / self.CSV_FILE
+
+    @computed_field
+    @property
+    def sqlite_path(self) -> Path:
+        return self.DATA_DIR / self.SQL_LITE_DB
+
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
         extra="ignore"
     )
-
-    @property
-    def DATABASE_PATH(self) -> Path:
-        return self.DATA_DIR / self.DATA_CSV_FILE
 
     def setup_logger(self):
         logger.remove()
@@ -45,11 +50,6 @@ class Settings(BaseSettings):
                 "<level>{message}</level>"
             ),
         )
-
-        # logging.basicConfig(
-        #     handlers=[InterceptHandler()],
-        #     level=0,
-        #     force=True)
 
         logger.info("Logging setup complete: Loguru + Standard Logging Bridge")
 

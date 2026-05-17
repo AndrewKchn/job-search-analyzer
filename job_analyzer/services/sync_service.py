@@ -3,15 +3,15 @@ import time
 
 from loguru import logger
 
-from job_analyzer.clients.api_client import ArbeitnowClient
+from job_analyzer.infrastructure.clients.arbeitnow_client import ArbeitnowClient
 from job_analyzer.core.config import settings
-from job_analyzer.repository.file_repository import CsvRepository
+from job_analyzer.infrastructure.repository.sql_lite.sqlite_repository import SQLiteRepository
 from job_analyzer.models.job_dto import JobDTO
 
 
 class SyncService:
 
-    def __init__(self, client: ArbeitnowClient, repository: CsvRepository, pages_limit: int):
+    def __init__(self, client: ArbeitnowClient, repository: SQLiteRepository, pages_limit: int):
         self.client = client
         self.repository = repository
         self.pages_limit = pages_limit

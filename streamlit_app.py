@@ -1,10 +1,11 @@
 # --- SETUP LOGGING ---
 from job_analyzer.core.config import settings
+from job_analyzer.infrastructure.clients.arbeitnow_client import ArbeitnowClient
+from job_analyzer.infrastructure.repository.sql_lite.sqlite_repository import SQLiteRepository
+
 settings.setup_logger()
 
 import streamlit as st
-from job_analyzer.clients.api_client import ArbeitnowClient
-from job_analyzer.repository.file_repository import CsvRepository
 from job_analyzer.services.job_service import JobService
 from job_analyzer.services.sync_service import SyncService
 
@@ -24,7 +25,7 @@ def get_services():
     Initializes and caches services to avoid re-creating
     objects on every Streamlit rerun.
     """
-    repo = CsvRepository(settings.DATABASE_PATH)
+    repo = SQLiteRepository(settings.sqlite_path)
     client = ArbeitnowClient(settings.ARBEITNOW_API_URL)
 
     sync_serv = SyncService(client, repo, pages_limit=settings.UPDATE_PAGES_LIMIT)

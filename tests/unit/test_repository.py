@@ -1,5 +1,5 @@
 from job_analyzer.models.job_dto import JobDTO
-from job_analyzer.repository.file_repository import CsvRepository
+from job_analyzer.infrastructure.repository.csv_file_repository.file_repository import CsvRepository
 
 
 def test_save_jobs(tmp_path):
