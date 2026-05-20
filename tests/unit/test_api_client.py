@@ -1,6 +1,6 @@
 import pytest
 
-from job_analyzer.clients.api_client import ArbeitnowClient
+from job_analyzer.infrastructure.clients.arbeitnow_client import ArbeitnowClient
 from job_analyzer.core.config import settings
 
 

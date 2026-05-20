@@ -1,13 +1,11 @@
 # --- SETUP LOGGING ---
+from job_analyzer.bootstrap import create_services
 from job_analyzer.core.config import settings
+from job_analyzer.infrastructure.clients.arbeitnow_client import ArbeitnowClient
+
 settings.setup_logger()
 
 import streamlit as st
-from job_analyzer.clients.api_client import ArbeitnowClient
-from job_analyzer.repository.file_repository import CsvRepository
-from job_analyzer.services.job_service import JobService
-from job_analyzer.services.sync_service import SyncService
-
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
@@ -24,16 +22,10 @@ def get_services():
     Initializes and caches services to avoid re-creating
     objects on every Streamlit rerun.
     """
-    repo = CsvRepository(settings.DATABASE_PATH)
-    client = ArbeitnowClient(settings.ARBEITNOW_API_URL)
-
-    sync_serv = SyncService(client, repo, pages_limit=settings.UPDATE_PAGES_LIMIT)
-    job_serv = JobService(repo)
-
-    return sync_serv, job_serv
+    return create_services()
 
 
-sync_service, job_service = get_services()
+sync_serv, job_serv = get_services()
 
 # --- SIDEBAR CONTROL PANEL ---
 with st.sidebar:
@@ -41,10 +33,10 @@ with st.sidebar:
     st.markdown("---")
 
     st.subheader("Data Management")
-    if st.button("🔄 Fetch Latest Jobs", use_container_width=True):
+    if st.button("🔄 Fetch Latest Jobs", width='stretch'):
         with st.spinner("Fetching latest jobs from Arbeitnow..."):
             # Execute the sync logic
-            new_jobs_count = sync_service.sync_jobs_from_all_pages()
+            new_jobs_count = sync_serv.sync_jobs_from_all_pages()
 
             if new_jobs_count > 0:
                 st.success(f"Sync complete! Added {new_jobs_count} new records.")
@@ -62,7 +54,7 @@ with st.sidebar:
 st.title("📊 Job Market Analytics")
 
 # Fetch data for visualization via JobService
-jobs_df = job_service.get_dataframe()
+jobs_df = job_serv.get_dataframe()
 
 if jobs_df is None or jobs_df.empty:
     st.warning("The database is currently empty. Please use the 'Fetch Latest Jobs' button in the sidebar.")
@@ -102,7 +94,15 @@ else:
         # Searchable and sortable dataframe
         st.dataframe(
             jobs_df[['title', 'company_name', 'location', 'remote', 'tags', 'created_at']],
-            use_container_width=True,
+            column_config={
+                "title": "Title",
+                "company_name": "Company",
+                "location": "Location",
+                "remote": "Remote",
+                "tags": "Tags",
+                "created_at": "Creation Date"
+            },
+            width='stretch',
             hide_index=True
         )
 
