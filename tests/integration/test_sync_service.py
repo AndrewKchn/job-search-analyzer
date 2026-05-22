@@ -66,10 +66,20 @@ def test_receive_all_jobs_multiple_pages(mock_sleep, mock_sync_service, mock_cli
     assert mock_client.get_jobs_from_page.call_count == 2
 
 
-def test_sync_jobs_from_all_pages_calls_lifecycle_service(mock_sync_service, mock_client, mock_lifecycle_service,
-                                                          fake_job_data):
+@patch('time.sleep', return_value=None)
+def test_sync_jobs_from_all_pages_fetches_multiple_pages(mock_sleep, mock_sync_service, mock_client,
+                                                          mock_lifecycle_service, fake_job_data):
     # Arrange
-    mock_client.get_jobs_from_page.return_value = fake_job_data
+    mock_client.get_jobs_from_page.side_effect = [
+        {
+            "data": [fake_job_data["data"][0]],
+            "links": {"next": "page2"}
+        },
+        {
+            "data": [],
+            "links": {"next": None}
+        }
+    ]
 
     # Act
     mock_sync_service.sync_jobs_from_all_pages()
