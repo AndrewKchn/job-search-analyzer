@@ -4,7 +4,7 @@ from loguru import logger
 from job_analyzer.infrastructure.repository.job_repository import JobRepo
 
 
-class JobService:
+class JobAnalyticsService:
     def __init__(self, repository: JobRepo):
         self.repository = repository
 

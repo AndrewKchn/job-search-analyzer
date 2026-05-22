@@ -5,40 +5,37 @@ from loguru import logger
 
 from job_analyzer.core.config import settings
 from job_analyzer.infrastructure.clients.arbeitnow_client import ArbeitnowClient
-from job_analyzer.infrastructure.repository.job_repository import JobRepo
 from job_analyzer.models.job_dto import JobDTO
+from job_analyzer.services.lifecycle_service import JobLifecycleService
 
 
 class SyncService:
 
-    def __init__(self, client: ArbeitnowClient, repository: JobRepo, pages_limit: int):
+    def __init__(self, client: ArbeitnowClient, job_lifecycle_service: JobLifecycleService):
         self.client = client
-        self.repository = repository
-        self.pages_limit = pages_limit
+        self.job_lifecycle_service = job_lifecycle_service
 
-    def _sync_jobs_from_page(self, page_number: int = 1):
-        logger.debug(f"Syncing jobs form page {page_number}...")
-        response = self.client.get_jobs_from_page(page_number)
-
-        job_list = response['data']
-        job_list_dto = [JobDTO(**job) for job in job_list]
-        unique_jobs_count = self.repository.save_unique_jobs(job_list_dto)
-        return response['links']['next'], unique_jobs_count
-
-    def _waiting(self):
+    def _apply_rate_limit_delay(self):
+        """Introduces a random delay to prevent hitting API rate limits (HTTP 429)."""
         delay = random.uniform(settings.MIN_SLEEP_BETWEEN_REQUESTS, settings.MAX_SLEEP_BETWEEN_REQUESTS)
         logger.debug(f"Waiting {delay:.2f} seconds...'")
         time.sleep(delay)
 
     def sync_jobs_from_all_pages(self):
         logger.info(f"Syncing jobs form all pages...")
+        jobs_dict = self._receive_all_jobs()
+        job_list_dto = [JobDTO(**job) for job in jobs_dict]
+        return self.job_lifecycle_service.sync_jobs(job_list_dto)
+
+    def _receive_all_jobs(self) -> list[dict]:
+        logger.info(f"Receiving all jobs...")
+        all_jobs = []
         page_number = 1
-        total_job_count = 0
         while True:
-            self._waiting()
-            has_next_page, unique_jobs_count = self._sync_jobs_from_page(page_number)
-            total_job_count += unique_jobs_count
-            if not has_next_page or page_number == self.pages_limit:
-                logger.info(f"{total_job_count} jobs have been added")
-                return total_job_count
-            page_number += 1
+            response_json = self.client.get_jobs_from_page(page_number)  # TODO: need try-except
+            all_jobs.extend(response_json["data"])
+            if not response_json['links']['next'] or page_number == settings.UPDATE_PAGES_LIMIT:
+                return all_jobs
+            else:
+                page_number += 1
+                self._apply_rate_limit_delay()

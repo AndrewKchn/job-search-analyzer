@@ -1,11 +1,7 @@
 # --- SETUP LOGGING ---
-from job_analyzer.bootstrap import create_services
-from job_analyzer.core.config import settings
-from job_analyzer.infrastructure.clients.arbeitnow_client import ArbeitnowClient
-
-settings.setup_logger()
-
 import streamlit as st
+
+from job_analyzer.bootstrap import create_services
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
@@ -36,12 +32,17 @@ with st.sidebar:
     if st.button("🔄 Fetch Latest Jobs", width='stretch'):
         with st.spinner("Fetching latest jobs from Arbeitnow..."):
             # Execute the sync logic
-            new_jobs_count = sync_serv.sync_jobs_from_all_pages()
+            sync_result = sync_serv.sync_jobs_from_all_pages()
 
-            if new_jobs_count > 0:
-                st.success(f"Sync complete! Added {new_jobs_count} new records.")
-            else:
-                st.info("No new jobs found. Database is up to date.")
+            st.success(
+                f"""
+                Sync complete!\n\n
+                
+                ✅ New jobs: {sync_result.new_jobs} \n
+                🔄 Existing jobs refreshed: {sync_result.updated_jobs} \n
+                ❌ Inactivated jobs: {sync_result.inactive_jobs}
+                """
+            )
 
             # Clear data cache so the UI reflects changes immediately
             st.cache_data.clear()

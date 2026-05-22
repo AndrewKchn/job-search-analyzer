@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pandas as pd
 import pytest
 
-from job_analyzer.services.job_service import JobService
+from job_analyzer.services.analytics_service import JobAnalyticsService
 
 
 @pytest.fixture
@@ -12,11 +12,11 @@ def mock_repository():
 
 
 @pytest.fixture
-def mock_job_service(mock_repository):
-    return JobService(repository=mock_repository)
+def mock_job_analytics_service(mock_repository):
+    return JobAnalyticsService(repository=mock_repository)
 
 
-def test_get_dataframe_success(mock_job_service, mock_repository):
+def test_get_dataframe_success(mock_job_analytics_service, mock_repository):
     # Arrange
     job1 = MagicMock()
     job1.model_dump.return_value = {'company_name': "Bragi", 'title': 'Python Dev', 'created_at': 1715580000}
@@ -26,7 +26,7 @@ def test_get_dataframe_success(mock_job_service, mock_repository):
     mock_repository.get_all_jobs.return_value = [job1, job2]
 
     # Act
-    df = mock_job_service.get_dataframe()
+    df = mock_job_analytics_service.get_dataframe()
 
     # Assert
     assert isinstance(df, pd.DataFrame)
@@ -36,12 +36,12 @@ def test_get_dataframe_success(mock_job_service, mock_repository):
     mock_repository.get_all_jobs.assert_called_once()
 
 
-def test_get_dataframe_empty_repository(mock_job_service, mock_repository):
+def test_get_dataframe_empty_repository(mock_job_analytics_service, mock_repository):
     # Arrange
     mock_repository.get_all_jobs.return_value = []
 
     # Act
-    df = mock_job_service.get_dataframe()
+    df = mock_job_analytics_service.get_dataframe()
 
     # Assert
     assert len(df) == 0

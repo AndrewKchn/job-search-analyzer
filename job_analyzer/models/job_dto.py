@@ -1,4 +1,5 @@
 import hashlib
+from datetime import datetime
 
 from pydantic import BaseModel, computed_field
 
@@ -13,9 +14,12 @@ class JobDTO(BaseModel):
     tags: list[str]
     job_types: list[str]
     location: str
-    created_at: str
     location: str
     created_at: int
+
+    first_seen_at: datetime | None = None
+    last_seen_at: datetime | None = None
+    is_active: bool = True
 
     @computed_field
     @property

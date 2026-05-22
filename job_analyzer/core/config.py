@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
+    logger.debug('Setting up .env config')
     ARBEITNOW_API_URL: str = "https://www.arbeitnow.com/api/job-board-api"
 
     DATA_DIR: Path = Path("data")
@@ -23,11 +24,6 @@ class Settings(BaseSettings):
 
     @computed_field
     @property
-    def csv_file_path(self) -> Path:
-        return self.DATA_DIR / self.CSV_FILE
-
-    @computed_field
-    @property
     def sqlite_path(self) -> Path:
         return self.DATA_DIR / self.SQL_LITE_DB
 
@@ -35,8 +31,10 @@ class Settings(BaseSettings):
         env_file=BASE_DIR / ".env",
         extra="ignore"
     )
+    logger.debug('Setting up .env config done!')
 
     def setup_logger(self):
+        logger.debug('Setting up logger')
         logger.remove()
 
         logger.add(
@@ -45,7 +43,8 @@ class Settings(BaseSettings):
             colorize=True
         )
 
-        logger.debug("Logging setup complete")
+        logger.debug("Logging setup complete!")
 
 
 settings = Settings()
+settings.setup_logger()

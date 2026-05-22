@@ -1,5 +1,6 @@
 import pytest
 
+from job_analyzer.infrastructure.repository.sql_lite.models.models import JobORM
 from job_analyzer.infrastructure.repository.sql_lite.sqlite_repository import SQLiteRepository
 from job_analyzer.models.job_dto import JobDTO
 
@@ -27,29 +28,51 @@ def fake_job():
     )
 
 
-def test_save_unique_jobs(repo, fake_job):
+def test_insert_jobs(repo, fake_job):
+    # Arrange
+    inserted = repo.insert_jobs([fake_job], sync_time=100)
+
     # Act
-    inserted = repo.save_unique_jobs([fake_job])
-
-    # Assert
-    assert inserted == 1
-
-
-def test_duplicate_jobs_are_ignored(repo, fake_job):
-    # Act
-    first_insert = repo.save_unique_jobs([fake_job])
-    second_insert = repo.save_unique_jobs([fake_job])
-
-    # Assert
-    assert first_insert == 1
-    assert second_insert == 0
-
-
-def test_get_all_jobs(repo, fake_job):
-    # Act
-    repo.save_unique_jobs([fake_job])
     jobs = repo.get_all_jobs()
 
     # Assert
+    assert inserted == 1
     assert len(jobs) == 1
-    assert jobs[0].title == "Python Developer"
+
+    job = jobs[0]
+    assert job.title == "Python Developer"
+
+def test_insert_duplicate_jobs(repo, fake_job):
+    # Act
+    first = repo.insert_jobs([fake_job], sync_time=100)
+    second = repo.insert_jobs([fake_job], sync_time=100)
+
+    # Assert
+    assert first == 1
+    assert second == 0
+
+def test_get_existing_hashes(repo, fake_job):
+    # Arrange
+    repo.insert_jobs([fake_job], sync_time=100)
+
+    # Act
+    hashes = repo.get_existing_job_ids([fake_job.hash_id])
+
+    # Assert
+    assert fake_job.hash_id in hashes
+
+def test_touch_jobs_updates_last_seen(repo, fake_job):
+    repo.insert_jobs([fake_job], sync_time=100)
+
+    updated = repo.touch_jobs(
+        [fake_job.hash_id],
+        ts=200
+    )
+
+    assert updated == 1
+
+    with repo.session_factory() as session:
+        orm_job = session.query(JobORM).first()
+
+        assert orm_job.last_seen == 200
+        assert orm_job.is_active is True
