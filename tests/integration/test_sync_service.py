@@ -2,7 +2,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from job_analyzer.core.config import settings
 from job_analyzer.models.job_dto import JobDTO
 from job_analyzer.services.sync_service import SyncService
 
@@ -12,26 +11,25 @@ def fake_job_data():
     return {
         "data": [
             {
-                "slug": "werkstudentin",
-                "company_name": "Kiwimo-Product GmbH",
+                "slug": "python-dev",
+                "company_name": "Google",
                 "title": "Python Developer",
-                "description": "Unsere Marke WhyWords unterstützt Unternehmer:innen",
+                "description": "Backend work",
                 "remote": True,
-                "url": "https://www.arbeitnow.com/jobs/companies/kiwimo-product-gmbh/",
-                "tags": [
-                    "Remote",
-                    "Marketing and Communication"
-                ],
-                "job_types": [
-                    "Working student",
-                    "hilfstätigkeit / student"
-                ],
-                "location": "Cologne",
-                "created_at": 1778437858
+                "url": "https://example.com",
+                "tags": ["python", "backend"],
+                "job_types": ["full-time"],
+                "location": "Berlin",
+                "created_at": 123456
             }
         ],
         "links": {"next": "https://api.arbeitnow.com/jobs?page=2"}
     }
+
+
+@pytest.fixture
+def mock_lifecycle_service():
+    return MagicMock()
 
 
 @pytest.fixture
@@ -40,60 +38,70 @@ def mock_client():
 
 
 @pytest.fixture
-def mock_repo():
-    return MagicMock()
-
-
-@pytest.fixture
-def service(mock_client, mock_repo):
-    return SyncService(client=mock_client, repository=mock_repo)
-
-
-def test_sync_jobs_from_page_success(mock_client, mock_repo, fake_job_data):
-    # Arrange
-    mock_client.get_jobs_from_page.return_value = fake_job_data
-    service = SyncService(client=mock_client, repository=mock_repo)
-
-    # Act
-    service._sync_jobs_from_page(page_number=1)
-
-    # Assert
-    mock_client.get_jobs_from_page.assert_called_once_with(1)
-    mock_repo.save_unique_jobs.assert_called_once()
-    passed_jobs = mock_repo.save_unique_jobs.call_args[0][0]
-    assert passed_jobs[0].title == "Python Developer"
-    assert isinstance(passed_jobs[0], JobDTO)
+def mock_sync_service(mock_client, mock_lifecycle_service):
+    return SyncService(
+        client=mock_client,
+        job_lifecycle_service=mock_lifecycle_service
+    )
 
 
 @patch('time.sleep', return_value=None)
-def test_sync_jobs_from_all_pages_stops_at_limit(mock_sleep, service, mock_client, mock_repo):
+@patch('job_analyzer.services.sync_service.settings.UPDATE_PAGES_LIMIT', 5)
+def test_receive_all_jobs_multiple_pages(mock_sleep, mock_sync_service, mock_client):
     # Arrange
     mock_client.get_jobs_from_page.side_effect = [
-        {'data': [], 'links': {'next': 'url2'}},
-        {'data': [], 'links': {'next': 'url3'}},
+        {"data": [{"title": "job1"}], "links": {"next": "page2"}},
+        {"data": [{"title": "job2"}], "links": {"next": None}}
     ]
-    mock_repo.save_unique_jobs.return_value = 5
 
     # Act
-    total = service.sync_jobs_from_all_pages()
+    result = mock_sync_service._receive_all_jobs()
 
     # Assert
-    assert total == 10
+    assert len(result) == 2
+
+    assert result[0]["title"] == "job1"
+    assert result[1]["title"] == "job2"
+
     assert mock_client.get_jobs_from_page.call_count == 2
 
 
-@patch('time.sleep', return_value=None)
-def test_sync_jobs_from_all_pages_stops_when_no_next(mock_sleep, service, mock_client, mock_repo):
+def test_sync_jobs_from_all_pages_calls_lifecycle_service(mock_sync_service, mock_client, mock_lifecycle_service,
+                                                          fake_job_data):
     # Arrange
-    mock_client.get_jobs_from_page.return_value = {
-        'data': [],
-        'links': {'next': None}
-    }
-    mock_repo.save_unique_jobs.return_value = 3
+    mock_client.get_jobs_from_page.return_value = fake_job_data
 
     # Act
-    total = service.sync_jobs_from_all_pages()
+    mock_sync_service.sync_jobs_from_all_pages()
 
     # Assert
-    assert total == 3
-    assert mock_client.get_jobs_from_page.call_count == 1
+    mock_lifecycle_service.sync_jobs.assert_called_once()
+
+    passed_jobs = (
+        mock_lifecycle_service
+        .sync_jobs
+        .call_args[0][0]
+    )
+
+    assert len(passed_jobs) == 1
+
+    assert isinstance(passed_jobs[0], JobDTO)
+
+    assert passed_jobs[0].title == "Python Developer"
+
+
+@patch('time.sleep', return_value=None)
+def test_receive_all_jobs_stops_when_no_next(mock_sleep, mock_sync_service, mock_client):
+    # Arrange
+    mock_client.get_jobs_from_page.return_value = {
+        "data": [{"title": "job1"}],
+        "links": {"next": None}
+    }
+
+    # Act
+    result = mock_sync_service._receive_all_jobs()
+
+    # Assert
+    assert len(result) == 1
+
+    mock_client.get_jobs_from_page.assert_called_once_with(1)

@@ -5,6 +5,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from job_analyzer.core.config import BASE_DIR
+from job_analyzer.models.sync_result import SyncResult
 
 
 @pytest.fixture
@@ -70,14 +71,30 @@ def test_app_with_empty_data(app_path, mock_services):
 
 def test_sidebar_fetch_button(app_path, mock_services):
     # Arrange
-    mock_sync_jobs_from_all_pages = Mock(return_value=5)
-    mock_services(mock_sync_jobs_from_all_pages=mock_sync_jobs_from_all_pages)
+    mock_sync_jobs_from_all_pages = Mock(
+        return_value=SyncResult(
+            new_jobs=5,
+            updated_jobs=10,
+            inactive_jobs=2
+        )
+    )
+
+    mock_services(
+        mock_sync_jobs_from_all_pages=mock_sync_jobs_from_all_pages
+    )
 
     # Act
     at = AppTest.from_file(app_path).run()
+
     at.sidebar.button[0].click().run()
 
     # Assert
     assert not at.exception
-    assert "Sync complete! Added 5 new records." in at.success[0].value
+
+    success_text = at.success[0].value
+
+    assert "New jobs: 5" in success_text
+    assert "Existing jobs refreshed: 10" in success_text
+    assert "Inactivated jobs: 2" in success_text
+
     mock_sync_jobs_from_all_pages.assert_called_once()
