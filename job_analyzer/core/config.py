@@ -24,11 +24,6 @@ class Settings(BaseSettings):
 
     @computed_field
     @property
-    def csv_file_path(self) -> Path:
-        return self.DATA_DIR / self.CSV_FILE
-
-    @computed_field
-    @property
     def sqlite_path(self) -> Path:
         return self.DATA_DIR / self.SQL_LITE_DB
 
