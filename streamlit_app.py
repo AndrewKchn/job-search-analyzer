@@ -35,10 +35,13 @@ with st.sidebar:
             sync_result = sync_serv.sync_jobs_from_all_pages()
 
             st.success(
-                f"Sync complete!\n\n"
-                f"✅ New jobs: {sync_result.new_jobs}\n"
-                f"🔄 Existing jobs refreshed: {sync_result.updated_jobs}\n"
-                f"❌ Inactivated jobs: {sync_result.inactive_jobs}"
+                f"""
+                Sync complete!\n\n
+                
+                ✅ New jobs: {sync_result.new_jobs} \n
+                🔄 Existing jobs refreshed: {sync_result.updated_jobs} \n
+                ❌ Inactivated jobs: {sync_result.inactive_jobs}
+                """
             )
 
             # Clear data cache so the UI reflects changes immediately

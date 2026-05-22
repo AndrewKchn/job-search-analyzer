@@ -23,10 +23,8 @@ class JobMapper:
             job_types=json.loads(job.job_types),
             location=job.location,
             created_at=job.created_at,
-
-            # lifecycle
-            first_seen=job.first_seen,
-            last_seen=job.last_seen,
+            first_seen_at=job.first_seen,
+            last_seen_at=job.last_seen,
             is_active=job.is_active
         )
 
