@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pandas as pd
 import pytest
 
-from job_analyzer.services.job_service import JobService
+from job_analyzer.services.analytics_service import JobAnalyticsService
 
 
 @pytest.fixture
@@ -13,7 +13,7 @@ def mock_repository():
 
 @pytest.fixture
 def mock_job_service(mock_repository):
-    return JobService(repository=mock_repository)
+    return JobAnalyticsService(repository=mock_repository)
 
 
 def test_get_dataframe_success(mock_job_service, mock_repository):

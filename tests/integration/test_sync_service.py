@@ -46,13 +46,13 @@ def mock_repo():
 
 @pytest.fixture
 def service(mock_client, mock_repo):
-    return SyncService(client=mock_client, repository=mock_repo, pages_limit=2)
+    return SyncService(client=mock_client, repository=mock_repo)
 
 
 def test_sync_jobs_from_page_success(mock_client, mock_repo, fake_job_data):
     # Arrange
     mock_client.get_jobs_from_page.return_value = fake_job_data
-    service = SyncService(client=mock_client, repository=mock_repo, pages_limit=settings.UPDATE_PAGES_LIMIT)
+    service = SyncService(client=mock_client, repository=mock_repo)
 
     # Act
     service._sync_jobs_from_page(page_number=1)
