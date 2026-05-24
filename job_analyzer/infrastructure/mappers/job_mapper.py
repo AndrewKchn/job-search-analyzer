@@ -1,6 +1,6 @@
 import json
 
-from job_analyzer.infrastructure.repository.sql_lite.models.models import JobORM
+from job_analyzer.infrastructure.database.models.models import JobORM
 from job_analyzer.models.job_dto import JobDTO
 
 

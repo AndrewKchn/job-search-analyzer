@@ -4,6 +4,7 @@ pydantic-settings
 requests
 streamlit
 sqlalchemy
+psycopg2-binary
 
 pytest
 pytest-cov
