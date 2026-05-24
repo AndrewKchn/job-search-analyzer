@@ -1,7 +1,7 @@
 import pytest
 
-from job_analyzer.infrastructure.repository.sql_lite.models.models import JobORM
-from job_analyzer.infrastructure.repository.sql_lite.sqlite_repository import SQLiteRepository
+from job_analyzer.infrastructure.database.models.models import JobORM
+from job_analyzer.infrastructure.database.repositories.sqlite_repository import SQLiteRepository
 from job_analyzer.models.job_dto import JobDTO
 
 

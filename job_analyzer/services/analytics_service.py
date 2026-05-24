@@ -1,7 +1,7 @@
 import pandas as pd
 from loguru import logger
 
-from job_analyzer.infrastructure.repository.job_repository import JobRepo
+from job_analyzer.core.interfaces.job_repository import JobRepo
 
 
 class JobAnalyticsService:

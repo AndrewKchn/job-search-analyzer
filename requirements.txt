@@ -87,6 +87,8 @@ pluggy==1.6.0
     #   pytest-cov
 protobuf==7.34.1
     # via streamlit
+psycopg2-binary==2.9.12
+    # via -r requirements.in
 pyarrow==24.0.0
     # via streamlit
 pydantic==2.13.4

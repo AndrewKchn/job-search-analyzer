@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     ARBEITNOW_API_URL: str = "https://www.arbeitnow.com/api/job-board-api"
 
     DATA_DIR: Path = Path("data")
-    CSV_FILE: str = "jobs_local_storage.csv"
     SQL_LITE_DB: str = "jobs_local_storage.db"
+    POSTGRES_DB_URL: str | None = None
 
     UPDATE_PAGES_LIMIT: int = 100
     MIN_SLEEP_BETWEEN_REQUESTS: int = 1

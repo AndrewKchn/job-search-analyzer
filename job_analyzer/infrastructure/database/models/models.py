@@ -1,9 +1,7 @@
-import time
-
 from sqlalchemy import String, Integer, Boolean, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from job_analyzer.infrastructure.repository.sql_lite.models.base import Base
+from job_analyzer.infrastructure.database.models.base import Base
 
 
 class JobORM(Base):
