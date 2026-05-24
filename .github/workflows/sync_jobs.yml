@@ -57,7 +57,7 @@ jobs:
       # from GitHub Actions Secrets
       - name: Run Job Synchronization
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
         run: |
           python run_sync.py
 
