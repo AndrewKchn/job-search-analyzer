@@ -15,6 +15,8 @@ class PostgresRepository(BaseSQLRepository):
 
         self.engine = create_engine(
             db_url,
+            pool_pre_ping=True,
+            pool_recycle=300,
             echo=False
         )
         self.session_factory = sessionmaker(bind=self.engine)
