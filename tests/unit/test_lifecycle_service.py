@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -124,9 +125,11 @@ def test_update_jobs_timestamps(mock_lifecycle_service, mock_repo, fake_job):
     )
 
 
-@patch("time.time", return_value=999)
-def test_sync_jobs_full_flow(mock_time, mock_lifecycle_service, mock_repo, fake_job):
+@patch("job_analyzer.services.lifecycle_service.datetime")
+def test_sync_jobs_full_flow(mock_datetime, mock_lifecycle_service, mock_repo, fake_job):
     # Arrange
+    fake_now = datetime(2026, 5, 25, 12, 0, tzinfo=timezone.utc)
+    mock_datetime.now.return_value = fake_now
     mock_repo.get_existing_job_ids.return_value = set()
 
     mock_repo.insert_jobs.return_value = 1
@@ -146,4 +149,4 @@ def test_sync_jobs_full_flow(mock_time, mock_lifecycle_service, mock_repo, fake_
     mock_repo.get_existing_job_ids.assert_called_once()
     mock_repo.insert_jobs.assert_called_once()
     mock_repo.touch_jobs.assert_called_once()
-    mock_repo.mark_jobs_inactive.assert_called_once_with(999)
+    mock_repo.mark_jobs_inactive.assert_called_once_with(fake_now)
