@@ -3,15 +3,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import sessionmaker
 
-from job_analyzer.infrastructure.database.repositories.base_sql_repository import BaseSQLRepository
 from job_analyzer.infrastructure.database.models.base import Base
+from job_analyzer.infrastructure.database.repositories.base_sql_repository import BaseSQLRepository
 
 
 class PostgresRepository(BaseSQLRepository):
     insert_function = staticmethod(insert)
 
     def __init__(self, db_url: str):
-        logger.debug(f"Initializing Postgres repository with {db_url}")
+        logger.debug("Initializing Postgres repository (Supabase connection)")
 
         self.engine = create_engine(
             db_url,

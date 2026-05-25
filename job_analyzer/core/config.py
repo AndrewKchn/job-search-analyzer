@@ -17,8 +17,8 @@ class Settings(BaseSettings):
     POSTGRES_DB_URL: str | None = None
 
     UPDATE_PAGES_LIMIT: int = 100
-    MIN_SLEEP_BETWEEN_REQUESTS: int = 1
-    MAX_SLEEP_BETWEEN_REQUESTS: int = 3
+    MIN_SLEEP_BETWEEN_REQUESTS: int = 2
+    MAX_SLEEP_BETWEEN_REQUESTS: int = 5
 
     LOG_LEVEL: str = "INFO"
 
