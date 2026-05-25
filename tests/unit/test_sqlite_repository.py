@@ -3,7 +3,7 @@ import pytest
 from job_analyzer.infrastructure.database.models.models import JobORM
 from job_analyzer.infrastructure.database.repositories.sqlite_repository import SQLiteRepository
 from job_analyzer.models.job_dto import JobDTO
-
+from datetime import datetime, timezone
 
 @pytest.fixture
 def repo(tmp_path):
@@ -24,13 +24,14 @@ def fake_job():
         tags=["python", "backend"],
         job_types=["full-time"],
         location="Berlin",
-        created_at=123456
+        created_at=datetime(2026, 5, 25, 12, 0, tzinfo=timezone.utc)
     )
 
 
 def test_insert_jobs(repo, fake_job):
     # Arrange
-    inserted = repo.insert_jobs([fake_job], sync_time=100)
+    sync_time = datetime(2026, 5, 25, 13, 0, tzinfo=timezone.utc)
+    inserted = repo.insert_jobs([fake_job], sync_time=sync_time)
 
     # Act
     jobs = repo.get_all_jobs()
@@ -44,8 +45,9 @@ def test_insert_jobs(repo, fake_job):
 
 def test_insert_duplicate_jobs(repo, fake_job):
     # Act
-    first = repo.insert_jobs([fake_job], sync_time=100)
-    second = repo.insert_jobs([fake_job], sync_time=100)
+    sync_time = datetime(2026, 5, 25, 13, 0, tzinfo=timezone.utc)
+    first = repo.insert_jobs([fake_job], sync_time=sync_time)
+    second = repo.insert_jobs([fake_job], sync_time=sync_time)
 
     # Assert
     assert first == 1
@@ -53,7 +55,8 @@ def test_insert_duplicate_jobs(repo, fake_job):
 
 def test_get_existing_hashes(repo, fake_job):
     # Arrange
-    repo.insert_jobs([fake_job], sync_time=100)
+    sync_time = datetime(2026, 5, 25, 13, 0, tzinfo=timezone.utc)
+    repo.insert_jobs([fake_job], sync_time=sync_time)
 
     # Act
     hashes = repo.get_existing_job_ids([fake_job.hash_id])
@@ -62,17 +65,22 @@ def test_get_existing_hashes(repo, fake_job):
     assert fake_job.hash_id in hashes
 
 def test_touch_jobs_updates_last_seen(repo, fake_job):
-    repo.insert_jobs([fake_job], sync_time=100)
+    # Arrange
+    sync_time = datetime(2026, 5, 25, 13, 0, tzinfo=timezone.utc)
+    updated_time = datetime(2026, 5, 25, 14, 0, tzinfo=timezone.utc)
+    repo.insert_jobs([fake_job], sync_time=sync_time)
 
+    # Act
     updated = repo.touch_jobs(
         [fake_job.hash_id],
-        ts=200
+        ts=updated_time
     )
 
+    # Assert
     assert updated == 1
 
     with repo.session_factory() as session:
         orm_job = session.query(JobORM).first()
 
-        assert orm_job.last_seen == 200
+        assert orm_job.last_seen.replace(tzinfo=timezone.utc) == updated_time
         assert orm_job.is_active is True

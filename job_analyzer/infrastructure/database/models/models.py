@@ -1,4 +1,6 @@
-from sqlalchemy import String, Integer, Boolean, Text
+from datetime import datetime
+
+from sqlalchemy import String, DateTime, Boolean, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from job_analyzer.infrastructure.database.models.base import Base
@@ -17,7 +19,7 @@ class JobORM(Base):
     tags: Mapped[str] = mapped_column(Text)
     job_types: Mapped[str] = mapped_column(Text)
     location: Mapped[str] = mapped_column(String)
-    created_at: Mapped[int] = mapped_column(Integer)
-    first_seen: Mapped[int] = mapped_column(Integer)
-    last_seen: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    first_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)

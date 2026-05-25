@@ -1,4 +1,4 @@
-import time
+from datetime import datetime, timezone
 
 from job_analyzer.core.interfaces.job_repository import JobRepo
 from job_analyzer.models.job_dto import JobDTO
@@ -10,7 +10,7 @@ class JobLifecycleService:
         self.repo = repo
 
     def sync_jobs(self, incoming_jobs: list[JobDTO]):
-        sync_time = int(time.time())
+        sync_time = datetime.now(timezone.utc).replace(microsecond=0)
         existing_job_ids = self.repo.get_existing_job_ids([job.hash_id for job in incoming_jobs])
 
         new_jobs_saved = self._save_new_jobs(incoming_jobs, existing_job_ids, sync_time)

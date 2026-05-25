@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from loguru import logger
 from sqlalchemy import select, update
 from sqlalchemy.exc import SQLAlchemyError
@@ -44,7 +46,7 @@ class BaseSQLRepository(JobRepo):
                 session.rollback()
                 raise RepositoryError("Failed to insert jobs") from e
 
-    def touch_jobs(self, hashes: list[str], ts: int) -> int:
+    def touch_jobs(self, hashes: list[str], ts: datetime) -> int:
         if not hashes:
             return 0
 
