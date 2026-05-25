@@ -10,6 +10,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 class Settings(BaseSettings):
     logger.debug('Setting up .env config')
+    ENV: str = "local"
     ARBEITNOW_API_URL: str = "https://www.arbeitnow.com/api/job-board-api"
 
     DATA_DIR: Path = Path("data")
@@ -20,7 +21,7 @@ class Settings(BaseSettings):
     MIN_SLEEP_BETWEEN_REQUESTS: int = 2
     MAX_SLEEP_BETWEEN_REQUESTS: int = 5
 
-    LOG_LEVEL: str = "INFO"
+    LOG_LEVEL: str = "DEBUG"
 
     @computed_field
     @property
