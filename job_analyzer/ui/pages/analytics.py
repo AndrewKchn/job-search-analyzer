@@ -1,4 +1,7 @@
 def apply_filters(df, filters):
+    if df is None or df.empty:
+        return df
+
     if filters["location"]:
         df = df[df["location"] == filters["location"]]
 

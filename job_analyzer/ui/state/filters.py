@@ -1,20 +1,10 @@
 import streamlit as st
 
-def init_filters():
-    if "filters" not in st.session_state:
-        st.session_state.filters = {
-            "location": None,
-            "remote_only": False,
-            "company": None,
-            "keyword": ""
-        }
-
-
 def get_filters():
-    init_filters()
-    return st.session_state.filters
+    location = st.session_state.get("location")
 
-
-def update_filter(key, value):
-    init_filters()
-    st.session_state.filters[key] = value
+    return {
+        "location": None if location == "All" else location,
+        "remote_only": st.session_state.get("remote_only", False),
+        "keyword": st.session_state.get("keyword", ""),
+    }
