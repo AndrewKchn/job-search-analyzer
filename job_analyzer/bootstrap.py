@@ -16,6 +16,7 @@ def create_repository():
     return PostgresRepository(settings.POSTGRES_DB_URL)
 
 def create_services():
+    settings.setup_logger()
     logger.debug("Initializing Services...")
 
     repo = create_repository()
