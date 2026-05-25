@@ -66,7 +66,7 @@ def test_app_with_empty_data(app_path, mock_services):
 
     # Assert
     assert not at.exception
-    assert "The database is currently empty" in at.warning[0].value
+    assert "Welcome to Job Search Analyzer" in at.info[0].value
 
 
 def test_sidebar_fetch_button(app_path, mock_services):
@@ -98,3 +98,36 @@ def test_sidebar_fetch_button(app_path, mock_services):
     assert "Inactivated jobs: 2" in success_text
 
     mock_sync_jobs_from_all_pages.assert_called_once()
+
+def test_dashboard_renders(app_path, mock_services):
+
+    mock_services(df=pd.DataFrame({
+        "title": ["Python Dev"],
+        "company_name": ["Google"],
+        "location": ["Berlin"],
+        "remote": [True],
+        "created_at": [123456]
+    }))
+
+    at = AppTest.from_file(app_path).run()
+
+    assert not at.exception
+    assert at.title
+
+def test_filters_exist(app_path, mock_services):
+
+    mock_services(df=pd.DataFrame({
+        "title": ["Dev"],
+        "company_name": ["X"],
+        "location": ["Berlin"],
+        "remote": [True],
+        "created_at": [123456]
+    }))
+
+    at = AppTest.from_file(app_path).run()
+
+    assert any("Location" in str(x.label) for x in at.selectbox)
+    assert any("Keyword search" in str(x.label) for x in at.text_input)
+    assert len(at.toggle) > 0
+
+
