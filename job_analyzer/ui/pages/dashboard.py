@@ -9,8 +9,7 @@ from job_analyzer.ui.state.filters import get_filters
 
 def render_dashboard(df):
 
-    filters = get_filters()
-    df = apply_filters(df, filters)
+
 
     # EMPTY FILTER RESULT
     if df.empty:

@@ -3,7 +3,9 @@ import streamlit as st
 from job_analyzer.bootstrap import create_services
 from job_analyzer.ui.components.footer import render_footer
 from job_analyzer.ui.components.sidebar import render_sidebar
+from job_analyzer.ui.pages.analytics import apply_filters
 from job_analyzer.ui.pages.dashboard import render_dashboard, render_empty_dashboard
+from job_analyzer.ui.state.filters import get_filters
 
 st.set_page_config(
     page_title="Job Search Analyzer",
@@ -24,9 +26,14 @@ def get_services():
 sync_service, job_service = get_services()
 
 
+@st.cache_data(ttl=60)
+def load_df():
+    return job_service.get_dataframe()
+
+
 def render_app(sync_service, job_service):
     # LOAD DATA
-    df = job_service.get_dataframe()
+    df = load_df()
 
     # SIDEBAR ALWAYS EXISTS
     render_sidebar(sync_service, df)
@@ -41,7 +48,9 @@ def render_app(sync_service, job_service):
         return
 
     # MAIN DASHBOARD
-    render_dashboard(df)
+    filters = get_filters()
+    df_filtered = apply_filters(df, filters)
+    render_dashboard(df_filtered)
 
     # FOOTER
     render_footer()
