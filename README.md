@@ -38,33 +38,34 @@ Unlike traditional web applications, this project is built entirely on Streamlit
 
 ---
 
+
 ## 🚀 Installation
 
 Clone the repository:
-
+```
 git clone <repo-url>
 cd job-search-analyzer
-
+```
 Create virtual environment:
-
+```
 python -m venv venv
 source venv/bin/activate  (Mac/Linux)
 venv\Scripts\activate     (Windows)
-
+```
 Install dependencies:
-
+```
 pip install -r requirements.txt
-
+```
 Set environment variables:
-
+```
 ENV=dev
 DATABASE_URL=your_database_url
 ARBEITNOW_API_URL=https://www.arbeitnow.com/api/job-board-api
-
+```
 Run the application:
-
+```
 streamlit run streamlit_app.py
-
+```
 ---
 
 ## 📌 Usage
@@ -85,7 +86,7 @@ Example workflow:
 ---
 
 ## 🧱 Project Structure
-
+```
 job_analyzer/
 ├── ui/                  # Streamlit UI components
 ├── services/            # Business logic layer
@@ -94,15 +95,15 @@ job_analyzer/
 ├── core/                # Interfaces and config
 ├── bootstrap.py         # Dependency setup
 streamlit_app.py         # Application entry point
-
+```
 ---
 
 ## 🧪 Testing
 
 Run tests with:
-
+```
 pytest --cov=job_analyzer --cov-report=term-missing
-
+```
 Current test coverage focuses on:
 - Service layer logic
 - Repository queries
@@ -110,19 +111,103 @@ Current test coverage focuses on:
 
 ---
 
-## 🧠 Architecture Notes
+
+## 🏗️ Architecture
 
 The application follows a layered architecture:
 
+![Architecture Diagram](docs/architecture.png)
+
 UI (Streamlit)
 → Service Layer (business logic)
-→ Repository Layer (database access)
-→ External API (Arbeitnow)
+→ Infrastructure Layer  (data access and external APIs)
 
 This separation ensures:
-- Testability
-- Maintainability
-- Flexibility for future migration to FastAPI
+- Clear responsibility boundaries
+- Easier testing and maintenance
+- Ability to migrate to a backend API in the future
+
+---
+
+## 🧠 System Design
+
+### Overview
+
+This application is designed as a lightweight analytics system built on top of Streamlit. Unlike traditional web applications, it does not use a separate frontend/backend split with REST APIs. Instead, Streamlit executes Python code directly and renders the UI based on the execution result.
+
+### 🔄 Data Flow (Sync Process)
+
+![Sync Sequence Diagram](docs/sync_sequence.png)
+
+### Architecture Decisions
+
+#### 1. Layered Design
+
+The system is divided into three logical layers:
+
+- UI Layer (Streamlit)
+- Service Layer (business logic)
+- Infrastructure Layer (data access and external APIs)
+
+This separation ensures:
+- Clear responsibility boundaries
+- Easier testing and maintenance
+- Ability to migrate to a backend API in the future
+
+---
+
+#### 2. Service-Oriented Logic
+
+Business logic is encapsulated in service classes:
+
+- SyncService → handles data ingestion and synchronization
+- JobAnalyticsService → handles data transformation and analytics
+- TrendsService → computes time-based statistics
+- JobLifecycleService → manages persistence rules
+
+Services are independent of UI and database implementation details.
+
+---
+
+#### 3. Repository Pattern
+
+All database access is abstracted via repository interfaces.
+
+This allows:
+- Switching between SQLite and PostgreSQL without changing business logic
+- Easier unit testing via mocking repositories
+- Centralized data access logic
+
+---
+
+#### 4. External API Integration
+
+Job data is retrieved from the Arbeitnow API via a dedicated client.
+The SyncService orchestrates the ingestion process:
+
+API → SyncService → LifecycleService → Repository → Database
+
+---
+
+### Why Streamlit?
+
+Streamlit was chosen to:
+- Rapidly prototype data-driven UI
+- Avoid frontend complexity (React/JS)
+- Focus on Python-based analytics logic
+- Enable fast iteration during development
+
+---
+
+### Future Evolution
+
+This architecture can be easily migrated into a full backend system:
+
+- Streamlit → React frontend
+- Services → FastAPI backend
+- Repository layer remains unchanged
+
+This makes the system naturally extensible toward a production-grade architecture.
 
 ---
 

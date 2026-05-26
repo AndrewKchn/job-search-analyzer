@@ -1,0 +1,33 @@
+@startuml
+
+title Job Sync Flow (Streamlit App)
+
+actor User
+participant "Streamlit UI" as UI
+participant SyncService as Sync
+participant ArbeitnowClient as API
+participant JobLifecycleService as Lifecycle
+participant JobRepo as Repo
+database DB
+
+User -> UI: Click "Sync Jobs"
+
+UI -> Sync: sync_jobs_from_all_pages()
+
+Sync -> API: fetch_jobs()
+API --> Sync: job data
+
+loop for each job batch
+    Sync -> Lifecycle: save_or_update(jobs)
+    Lifecycle -> Repo: persist jobs
+    Repo -> DB: INSERT / UPDATE
+    DB --> Repo: OK
+    Repo --> Lifecycle: OK
+end
+
+Lifecycle --> Sync: sync result
+Sync --> UI: SyncResult
+
+UI -> UI: st.rerun()
+
+@enduml
