@@ -1,0 +1,46 @@
+@startuml
+
+skinparam componentStyle rectangle
+title Job Analyzer - Architecture
+
+package "Streamlit UI" {
+    [Dashboard]
+    [Filters]
+    [Sidebar]
+}
+
+package "Services Layer" {
+    [SyncService]
+    [JobAnalyticsService]
+    [JobLifecycleService]
+    [TrendsService]
+}
+
+package "Infrastructure Layer" {
+    [JobRepo]
+    [ArbeitnowClient]
+}
+
+database "PostgreSQL / SQLite" as DB
+cloud "Arbeitnow API" as API
+
+' UI → Services
+[Dashboard] --> [JobAnalyticsService]
+[Dashboard] --> [TrendsService]
+[Filters] --> [JobAnalyticsService]
+[Sidebar] --> [SyncService]
+
+' Sync flow
+[SyncService] --> [JobLifecycleService]
+[SyncService] --> [ArbeitnowClient]
+
+' Data access
+[JobLifecycleService] --> [JobRepo]
+[JobAnalyticsService] --> [JobRepo]
+[TrendsService] --> [JobRepo]
+
+' External systems
+[JobRepo] --> DB
+[ArbeitnowClient] --> API
+
+@enduml
