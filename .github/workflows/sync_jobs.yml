@@ -58,6 +58,7 @@ jobs:
       - name: Run Job Synchronization
         env:
           POSTGRES_DB_URL: ${{ secrets.POSTGRES_DB_URL }}
+          ENV: ${{ secrets.ENV }}
         run: |
           python run_sync.py
 
