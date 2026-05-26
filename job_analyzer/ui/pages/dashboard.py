@@ -3,15 +3,10 @@ import streamlit as st
 from job_analyzer.ui.components.charts import render_charts
 from job_analyzer.ui.components.metrics import render_metrics
 from job_analyzer.ui.components.table import render_table
-from job_analyzer.ui.pages.analytics import apply_filters
-from job_analyzer.ui.state.filters import get_filters
+from job_analyzer.ui.components.trends import render_trends_section
 
 
 def render_dashboard(df):
-
-    filters = get_filters()
-    df = apply_filters(df, filters)
-
     # EMPTY FILTER RESULT
     if df.empty:
         st.warning("No jobs match current filters.")
@@ -31,6 +26,9 @@ def render_dashboard(df):
 
     # TABLE
     render_table(df)
+
+    # TRENDS
+    render_trends_section(df)
 
 
 def render_empty_dashboard():
