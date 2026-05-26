@@ -1,10 +1,9 @@
 import streamlit as st
 
-from job_analyzer.services.trends_service import TrendsService
 from job_analyzer.ui.components.charts import render_charts
 from job_analyzer.ui.components.metrics import render_metrics
 from job_analyzer.ui.components.table import render_table
-from job_analyzer.ui.components.trends import render_trends
+from job_analyzer.ui.components.trends import render_trends_section
 
 
 def render_dashboard(df):
@@ -29,17 +28,7 @@ def render_dashboard(df):
     render_table(df)
 
     # TRENDS
-    trends_service = TrendsService(df)
-    tab1, tab2, tab3 = st.tabs(["Daily", "Weekly", "Monthly"])
-
-    with tab1:
-        render_trends(trends_service.daily_trends(), "Daily Trends")
-
-    with tab2:
-        render_trends(trends_service.weekly_trends(), "Weekly Trends")
-
-    with tab3:
-        render_trends(trends_service.monthly_trends(), "Monthly Trends")
+    render_trends_section(df)
 
 
 def render_empty_dashboard():

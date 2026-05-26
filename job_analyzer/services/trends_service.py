@@ -11,7 +11,15 @@ class TrendsService:
         return self.df.groupby(self.df["created_at"].dt.date).size()
 
     def weekly_trends(self):
-        return self.df.groupby(self.df["created_at"].dt.to_period("W")).size()
+        return (
+            self.df
+            .groupby(self.df["created_at"].dt.to_period("W").dt.start_time)
+            .size()
+        )
 
     def monthly_trends(self):
-        return self.df.groupby(self.df["created_at"].dt.to_period("M")).size()
+        return (
+            self.df
+            .groupby(self.df["created_at"].dt.to_period("M").dt.start_time)
+            .size()
+        )
