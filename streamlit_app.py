@@ -1,6 +1,7 @@
 import streamlit as st
 
 from job_analyzer.bootstrap import create_services
+from job_analyzer.core.decorators.error_handler import handle_ui_errors
 from job_analyzer.ui.components.footer import render_footer
 from job_analyzer.ui.components.sidebar import render_sidebar
 from job_analyzer.ui.pages.analytics import apply_filters
@@ -30,8 +31,8 @@ sync_service, job_service = get_services()
 def load_df():
     return job_service.get_dataframe()
 
-
-def render_app(sync_service, job_service):
+@handle_ui_errors
+def render_app(sync_service):
     # LOAD DATA
     df = load_df()
 
@@ -56,4 +57,4 @@ def render_app(sync_service, job_service):
     render_footer()
 
 
-render_app(sync_service, job_service)
+render_app(sync_service)

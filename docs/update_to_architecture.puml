@@ -1,0 +1,49 @@
+@startuml
+
+skinparam componentStyle rectangle
+title Job Analyzer - FastAPI Architecture
+
+package "Frontend Layer" {
+    [Streamlit UI]
+}
+
+package "API Layer" {
+    [FastAPI Controllers]
+}
+
+package "Service Layer" {
+    [SyncService]
+    [JobAnalyticsService]
+    [JobLifecycleService]
+    [TrendsService]
+}
+
+package "Infrastructure Layer" {
+    [JobRepo]
+    [ArbeitnowClient]
+}
+
+database "PostgreSQL" as DB
+cloud "Arbeitnow API" as API
+
+' Frontend -> API
+[Streamlit UI] --> [FastAPI Controllers]
+
+' API -> Services
+[FastAPI Controllers] --> [SyncService]
+[FastAPI Controllers] --> [JobAnalyticsService]
+[FastAPI Controllers] --> [TrendsService]
+
+' Services
+[SyncService] --> [JobLifecycleService]
+[SyncService] --> [ArbeitnowClient]
+
+[JobLifecycleService] --> [JobRepo]
+[JobAnalyticsService] --> [JobRepo]
+[TrendsService] --> [JobRepo]
+
+' Infrastructure
+[JobRepo] --> DB
+[ArbeitnowClient] --> API
+
+@enduml

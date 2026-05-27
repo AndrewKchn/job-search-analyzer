@@ -1,2 +1,6 @@
 class RepositoryError(Exception):
-    """Raised when repository operation fails."""
+    pass
+
+
+class APIConnectionError(Exception):
+    pass
