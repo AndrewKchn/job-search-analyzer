@@ -9,6 +9,7 @@ def apply_filters(df, filters):
         df = df[df["remote"] == True]
 
     if filters["keyword"]:
-        df = df[df["title"].str.contains(filters["keyword"], case=False, na=False)]
+        df = df[df["title"].str.contains(filters["keyword"], case=False, na=False) |
+                df["description"].str.contains(filters["keyword"], case=False, na=False)]
 
     return df
