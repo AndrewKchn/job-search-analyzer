@@ -14,7 +14,6 @@ class JobDTO(BaseModel):
     tags: list[str]
     job_types: list[str]
     location: str
-    location: str
     created_at: datetime
 
     first_seen_at: datetime | None = None
