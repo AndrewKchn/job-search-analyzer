@@ -24,7 +24,15 @@ class SyncService:
     def sync_jobs_from_all_pages(self):
         logger.info(f"Syncing jobs form all pages...")
         jobs_dict = self._receive_all_jobs()
-        job_list_dto = [JobDTO(**job) for job in jobs_dict]
+        job_list_dto = []
+
+        for i, job in enumerate(jobs_dict):
+            if not isinstance(job.get("tags"), list):
+                logger.warning("Skipping job #%s: invalid tags", i)
+                continue
+
+            job_list_dto.append(JobDTO(**job))
+        # job_list_dto = [JobDTO(**job) for job in jobs_dict]  # TODO: need to fix the validation
         return self.job_lifecycle_service.sync_jobs(job_list_dto)
 
     def _receive_all_jobs(self) -> list[dict]:
